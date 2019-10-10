@@ -1,0 +1,38 @@
+.login-form {
+  width: 33%;
+  margin: 0 auto;
+}
+
+.section {
+  min-height: 80vh;
+}
+
+.categories-selection .checkbox {
+  width: 23%;
+  display: inline-block;
+}
+
+.datetimepicker-header {
+  display: none !important;
+}
+
+.footer {
+  background-color: rgb(34, 27, 27);
+  color: #fff;
+}
+
+.categories-selection {
+  margin-bottom: 1em;
+}
+
+.request {
+  cursor: wait;
+}
+
+// mobile phone
+@media only screen and (max-width: 991px) {
+	.categories-selection .checkbox {
+    display: block;
+    width: 100%;
+  }
+}

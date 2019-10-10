@@ -1,0 +1,195 @@
+<nav class="navbar is-info" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a class="navbar-item" href="#">
+      <img src="https://bulma.io/images/bulma-logo.png" width="112" height="28">
+    </a>
+
+    <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false"
+      data-target="navbarBasicExample">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+
+  <div id="navbarBasicExample" class="navbar-menu">
+    <div class="navbar-start">
+      <a class="navbar-item">
+        Home
+      </a>
+    </div>
+
+    <div class="navbar-end">
+      <div class="navbar-item">
+        <div class="buttons">
+          <a class="button is-light" ng-if="!vm.showLogin" ng-click="logout()">
+            Logout
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+<section class="section">
+  <div class="container">
+
+    <!-- Login Form -->
+    <div ng-if="vm.showLogin" class="login-form">
+      <form class="" ng-submit="vm.saveCredentials()">
+        <div class="field">
+          <label class="label">Username</label>
+          <div class="control">
+            <input required ng-class="{'is-danger': invalidCredentials}" class="input" ng-model="vm.username"
+              type="text" placeholder="Enter your username" />
+          </div>
+        </div>
+        <div class="field">
+          <label class="label">Password</label>
+          <div class="control">
+            <input required ng-class="{'is-danger': invalidCredentials}" class="input" ng-model="vm.password"
+              type="password" placeholder="Enter your password" />
+          </div>
+          <p ng-if="invalidCredentials" class="help is-danger">Username or password is invalid</p>
+        </div>
+        <input ng-disabled="loading" type="submit" class="button is-primary is-rounded" value="Login" />
+      </form>
+    </div>
+
+    <!-- Basic Information Form -->
+    <div ng-if="!vm.showLogin && !vm.submitted">
+      <form name="getInfoForm" class="" ng-submit="vm.getInfo()">
+        <div class="field">
+          <label class="label">Cupon del curso</label>
+          <div class="control">
+            <input ng-model="vm.courseCoupon" class="input" type="text" placeholder="COUPONCODE" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">HTML</label>
+          <div class="control">
+            <textarea required class="textarea" ng-model="vm.courseHtml" placeholder="Course HTML"></textarea>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">Tags (separados por comas)</label>
+          <div class="control">
+            <input required ng-model="vm.tagString" class="input" type="text" placeholder="tag1, tag2" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">Descuento</label>
+          <div class="select is-rounded">
+            <select ng-init="vm.data.discount = selectOpts[0]" ng-options="x for x in selectOpts"
+              ng-model="vm.data.discount">
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">Tipo de publicación</label>
+          <div class="tabs is-toggle">
+            <ul>
+              <li ng-init="vm.data.status = 'publish'" ng-class="{'is-active': vm.data.status === opt.val}"
+                ng-repeat="opt in selectPublishOpts" ng-click="publishSelect(opt.val)">
+                <a>
+                  <span class="icon is-small"><i class="fas"
+                      ng-class="{'fa-edit': opt.val === 'draft', 'fa-globe-americas': opt.val === 'publish', 'fa-calendar-alt': opt.val === 'future'}"
+                      aria-hidden="true"></i></span>
+                  <span>{{ opt.esp }}</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="field" id="calendar" style="display: none">
+          <label class="label">Fecha de publicación</label>
+          <div class="control">
+            <input id="datepicker" name="datePicker" ng-required="vm.data.status === 'future'" type="date">
+          </div>
+        </div>
+
+        <div class="categories-selection">
+          <label class="checkbox" ng-repeat="cat in categories">
+            <input type="checkbox" ng-model="selectedList[cat.id]" />
+            {{ cat.text }}
+          </label>
+        </div>
+
+        <input type="submit" class="button is-primary is-rounded" value="Obtener Información" />
+        <button type="button" class="button is-danger is-rounded" ng-click="vm.reset()">
+          Reestablecer
+        </button>
+      </form>
+    </div>
+
+    <!-- Information Preview -->
+    <div id="response" ng-if="vm.submitted">
+      <h1 class="title is-1">Previsualización</h1>
+      <div>
+        <h3 class="title is-3">Título</h3>
+        <p class="subtitle is-4">
+          {{
+        vm.data.discount === 'FREE'
+          ? '[FREE] ' + vm.data.title + ' [Udemy]'
+          : '[' + vm.data.discount + '% OFF] ' + vm.data.title + ' [Udemy]'
+      }}
+        </p>
+        <br />
+      </div>
+      <div>
+        <h3 class="title is-3">Extracto</h3>
+        <p class="subtitle is-4">{{ vm.data.excerpt }}</p>
+        <br />
+      </div>
+      <div>
+        <h3 class="title is-3">Imagen</h3>
+        <p style="text-align: center;">
+          <img style="border: 1px solid black;" ng-src="{{ vm.image }}" />
+        </p>
+        <br />
+      </div>
+      <div>
+        <p class="title is-3">Categorias</p>
+        <p class="subtitle is-4" ng-repeat="cat in selectedListText" style="display: inline-block;width: 33%;">{{ cat }}
+        </p>
+        <br />
+      </div>
+      <div>
+        <p class="title is-3">Tags</p>
+        <p class="subtitle is-4" ng-repeat="tag in vm.data.tags" style="display: inline-block;width: 33%;">{{ tag }}
+        </p>
+        <br />
+      </div>
+
+
+
+    </div>
+    <h3 class="title is-3" ng-if="vm.submitted">Descripcion del curso en la publicacion</h3>
+    <div id="courseDesc"></div>
+
+    <div ng-if="vm.submitted">
+      <br>
+      <button class="button is-primary is-rounded" ng-disabled="loading" ng-click="vm.send()">
+        Enviar
+      </button>
+      <button class="button is-danger is-rounded" ng-click="vm.reset()">
+        Reestablecer
+      </button>
+    </div>
+
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="content has-text-centered">
+    <p>
+      Copyright © todos los derechos reservados.
+    </p>
+  </div>
+</footer>
