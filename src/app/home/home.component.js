@@ -98,7 +98,7 @@
         type: 'is-primary',
         position: 'bottom-right',
         animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
+      }); 
     };
 
     vm.getInfo = () => {
