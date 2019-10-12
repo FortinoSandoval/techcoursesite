@@ -58,7 +58,10 @@
     if (!localStorage.credentials) {
       vm.showLogin = true;
     }
-    vm.apiUrl = 'api'
+    vm.apiUrl = ''
+    if (location.hostname === 'localhost' && location.port !== '4000') {
+      vm.apiUrl = 'api'
+    }
 
     vm.saveCredentials = () => {
       $scope.invalidCredentials = false;
