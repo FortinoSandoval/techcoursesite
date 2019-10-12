@@ -1,11 +1,20 @@
 <nav class="navbar is-info" role="navigation" aria-label="main navigation">
   <div class="navbar-brand">
     <a class="navbar-item" href="#">
-      <img src="https://bulma.io/images/bulma-logo.png" width="112" height="28">
+      <img
+        src="https://bulma.io/images/bulma-logo.png"
+        width="112"
+        height="28"
+      />
     </a>
 
-    <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false"
-      data-target="navbarBasicExample">
+    <a
+      role="button"
+      class="navbar-burger burger"
+      aria-label="menu"
+      aria-expanded="false"
+      data-target="navbarBasicExample"
+    >
       <span aria-hidden="true"></span>
       <span aria-hidden="true"></span>
       <span aria-hidden="true"></span>
@@ -31,62 +40,101 @@
   </div>
 </nav>
 
-
 <section class="section">
   <div class="container">
-
     <!-- Login Form -->
     <div ng-if="vm.showLogin" class="login-form">
       <form class="" ng-submit="vm.saveCredentials()">
         <div class="field">
           <label class="label">Username</label>
           <div class="control">
-            <input required ng-class="{'is-danger': invalidCredentials}" class="input" ng-model="vm.username"
-              type="text" placeholder="Enter your username" />
+            <input
+              required
+              ng-class="{'is-danger': invalidCredentials}"
+              class="input"
+              ng-model="vm.username"
+              type="text"
+              placeholder="Enter your username"
+            />
           </div>
         </div>
         <div class="field">
           <label class="label">Password</label>
           <div class="control">
-            <input required ng-class="{'is-danger': invalidCredentials}" class="input" ng-model="vm.password"
-              type="password" placeholder="Enter your password" />
+            <input
+              required
+              ng-class="{'is-danger': invalidCredentials}"
+              class="input"
+              ng-model="vm.password"
+              type="password"
+              placeholder="Enter your password"
+            />
           </div>
-          <p ng-if="invalidCredentials" class="help is-danger">Username or password is invalid</p>
+          <p ng-if="invalidCredentials" class="help is-danger">
+            Username or password is invalid
+          </p>
         </div>
-        <input ng-disabled="loading" type="submit" class="button is-primary is-rounded" value="Login" />
+        <input
+          ng-disabled="loading"
+          type="submit"
+          class="button is-primary is-rounded"
+          value="Login"
+        />
       </form>
     </div>
 
-    <!-- Basic Information Form -->
-    <div ng-if="!vm.showLogin && !vm.submitted">
-      <form name="getInfoForm" class="" ng-submit="vm.getInfo()">
-        <div class="field">
-          <label class="label">Cupon del curso</label>
-          <div class="control">
-            <input ng-model="vm.courseCoupon" class="input" type="text" placeholder="COUPONCODE" />
-          </div>
-        </div>
+    <div
+      class="file has-name is-fullwidth"
+      ngf-drop
+      ngf-select
+      ng-model="files"
+      ngf-drag-over-class="'dragover'"
+      ngf-multiple="true"
+      ngf-allow-dir="true"
+      accept="*"
+      ngf-pattern="'*'"
+    >
+      <label class="file-label">
+        <span class="file-cta">
+          <span class="file-icon">
+            <i class="fas fa-upload"></i>
+          </span>
+          <span class="file-label">
+            Seleccionar archivo
+          </span>
+        </span>
+        <span class="file-name">
+          {{ files[0].name }}
+        </span>
+      </label>
+    </div>
+    <button ng-click="uploadPic(files[0])">Upload</button>
 
+    <!-- Basic Information Form -->
+    <div ng-if="!vm.showLogin && !submitted">
+      <form name="getInfoForm" class="" ng-submit="vm.getInfo()">
         <div class="field">
           <label class="label">HTML</label>
           <div class="control">
-            <textarea required class="textarea" ng-model="vm.courseHtml" placeholder="Course HTML"></textarea>
+            <textarea
+              required
+              class="textarea"
+              ng-model="vm.courseHtml"
+              placeholder="Course HTML"
+            ></textarea>
           </div>
         </div>
 
         <div class="field">
           <label class="label">Tags (separados por comas)</label>
           <div class="control">
-            <input required ng-model="vm.tagString" class="input" type="text" placeholder="tag1, tag2" />
-          </div>
-        </div>
-
-        <div class="field">
-          <label class="label">Descuento</label>
-          <div class="select is-rounded">
-            <select ng-init="vm.data.discount = selectOpts[0]" ng-options="x for x in selectOpts"
-              ng-model="vm.data.discount">
-            </select>
+            <input
+              required
+              ng-model="vm.tagString"
+              class="input"
+              type="text"
+              placeholder="tag1, tag2"
+            />
           </div>
         </div>
 
@@ -94,12 +142,20 @@
           <label class="label">Tipo de publicación</label>
           <div class="tabs is-toggle">
             <ul>
-              <li ng-init="vm.data.status = 'publish'" ng-class="{'is-active': vm.data.status === opt.val}"
-                ng-repeat="opt in selectPublishOpts" ng-click="publishSelect(opt.val)">
+              <li
+                ng-init="vm.data.status = 'publish'"
+                ng-class="{'is-active': vm.data.status === opt.val}"
+                ng-repeat="opt in selectPublishOpts"
+                ng-click="publishSelect(opt.val)"
+              >
                 <a>
-                  <span class="icon is-small"><i class="fas"
+                  <span class="icon is-small"
+                    ><i
+                      class="fas"
                       ng-class="{'fa-edit': opt.val === 'draft', 'fa-globe-americas': opt.val === 'publish', 'fa-calendar-alt': opt.val === 'future'}"
-                      aria-hidden="true"></i></span>
+                      aria-hidden="true"
+                    ></i
+                  ></span>
                   <span>{{ opt.esp }}</span>
                 </a>
               </li>
@@ -110,7 +166,12 @@
         <div class="field" id="calendar" style="display: none">
           <label class="label">Fecha de publicación</label>
           <div class="control">
-            <input id="datepicker" name="datePicker" ng-required="vm.data.status === 'future'" type="date">
+            <input
+              id="datepicker"
+              name="datePicker"
+              ng-required="vm.data.status === 'future'"
+              type="date"
+            />
           </div>
         </div>
 
@@ -121,24 +182,30 @@
           </label>
         </div>
 
-        <input type="submit" class="button is-primary is-rounded" value="Obtener Información" />
-        <button type="button" class="button is-danger is-rounded" ng-click="vm.reset()">
+        <input
+          type="submit"
+          class="button is-primary is-rounded"
+          value="Obtener Información"
+        />
+        <button
+          type="button"
+          class="button is-danger is-rounded"
+          ng-click="vm.reset()"
+        >
           Reestablecer
         </button>
       </form>
     </div>
 
     <!-- Information Preview -->
-    <div id="response" ng-if="vm.submitted">
+    <div id="response" ng-if="submitted">
       <h1 class="title is-1">Previsualización</h1>
       <div>
         <h3 class="title is-3">Título</h3>
         <p class="subtitle is-4">
           {{
-        vm.data.discount === 'FREE'
-          ? '[FREE] ' + vm.data.title + ' [Udemy]'
-          : '[' + vm.data.discount + '% OFF] ' + vm.data.title + ' [Udemy]'
-      }}
+            vm.data.title
+          }}
         </p>
         <br />
       </div>
@@ -156,33 +223,45 @@
       </div>
       <div>
         <p class="title is-3">Categorias</p>
-        <p class="subtitle is-4" ng-repeat="cat in selectedListText" style="display: inline-block;width: 33%;">{{ cat }}
+        <p
+          class="subtitle is-4"
+          ng-repeat="cat in selectedListText"
+          style="display: inline-block;width: 33%;"
+        >
+          {{ cat }}
         </p>
         <br />
       </div>
       <div>
         <p class="title is-3">Tags</p>
-        <p class="subtitle is-4" ng-repeat="tag in vm.data.tags" style="display: inline-block;width: 33%;">{{ tag }}
+        <p
+          class="subtitle is-4"
+          ng-repeat="tag in vm.data.tags"
+          style="display: inline-block;width: 33%;"
+        >
+          {{ tag }}
         </p>
         <br />
       </div>
-
-
-
     </div>
-    <h3 class="title is-3" ng-if="vm.submitted">Descripcion del curso en la publicacion</h3>
+    <h3 class="title is-3" ng-if="submitted">
+      Descripcion del curso en la publicacion
+    </h3>
     <div id="courseDesc"></div>
 
-    <div ng-if="vm.submitted">
-      <br>
-      <button class="button is-primary is-rounded" ng-disabled="loading" ng-click="vm.send()">
+    <div ng-if="submitted">
+      <br />
+      <button
+        class="button is-primary is-rounded"
+        ng-disabled="loading"
+        ng-click="vm.send()"
+      >
         Enviar
       </button>
       <button class="button is-danger is-rounded" ng-click="vm.reset()">
         Reestablecer
       </button>
     </div>
-
   </div>
 </section>
 

@@ -8,34 +8,30 @@
   });
 
   /** @ngInject */
-  function HomeController($state, $http, $scope) {
+  function HomeController($state, $http, $scope, Upload, $timeout) {
     const vm = this;
 
-    vm.submitted = false;
+    $scope.apiUrl = location.hostname === 'localhost' && location.port !== '4000' ? 'api' : '';
+
+    $scope.uploadTnt = (file, fileName) => {
+      if (!file || !fileName) return;
+      let formData = new FormData();
+      formData.append('file', file);
+      formData.append('fileName', fileName);
+      return $http({
+        url: `${$scope.apiUrl}/savetnt`,
+        method: 'POST',
+        data: formData,
+        headers: { 'Content-Type': undefined },
+        transformRequest: angular.identity
+      });
+    };
+
+    $scope.submitted = false;
     vm.data = {
       categories: [],
       tags: []
     };
-    $scope.categories = [
-      { id: 21, text: 'Databases' },
-      { id: 9, text: 'Design' },
-      { id: 24, text: 'Development Tools' },
-      { id: 25, text: 'E-Commerce' },
-      { id: 20, text: 'Game Development' },
-      { id: 6, text: 'IT and Software' },
-      { id: 10, text: 'Marketing' },
-      { id: 18, text: 'Mobile Apps' },
-      { id: 12, text: 'Photography' },
-      { id: 19, text: 'Programming Languages' },
-      { id: 16, text: 'Web Development' },
-      { id: 22, text: 'Software Testing' },
-      { id: 15, text: 'Teaching & Academics' },
-      { id: 23, text: 'Software Engineering' },
-      { id: 3, text: 'Development' }
-    ];
-
-    $scope.selectOpts = [100, 99, 95, 90, 'FREE'];
-
     
     $scope.selectPublishOpts = [
       {
@@ -58,9 +54,19 @@
     if (!localStorage.credentials) {
       vm.showLogin = true;
     }
-    vm.apiUrl = ''
-    if (location.hostname === 'localhost' && location.port !== '4000') {
-      vm.apiUrl = 'api'
+
+    if (!localStorage.getItem('categories')) {
+      const { username, password } = JSON.parse(localStorage.getItem('credentials'));
+      const DTO = {
+        basic: authenticateUser(username, password)
+      }
+      $http.post(`${$scope.apiUrl}/categories`, DTO).then(({ data }) => {
+        const categories = data.map(x => ({ id: x.id, text: decodeHtml(x.name) }));
+        localStorage.setItem('categories', JSON.stringify(categories));
+        $scope.categories = categories;
+      });
+    } else {
+      $scope.categories = JSON.parse(localStorage.getItem('categories'));
     }
 
     vm.saveCredentials = () => {
@@ -181,20 +187,17 @@
       }
       
       /** Go to course link */
-      const courseBtn = document.createElement('figure');
-      courseBtn.classList.add('wp-block-image');
       const courseLink = document.createElement('a');
       courseLink.target = '_blank';
       courseLink.rel = 'noreferrer noopener';
-      courseLink.href = finalUrl;
-      const linkImg = document.createElement('img');
-      linkImg.src = 'https://techcoursesite.com/wp-content/uploads/2019/09/course-link.png';
-
+      courseLink.innerText = `Download now`;
+      
       /** Title get */
       const subTitle = htmlData.substring(htmlData.indexOf('<h1'), htmlData.indexOf('</h1'));
       var title = subTitle.substring(subTitle.indexOf('\\n') + 2, subTitle.length - 2);
       title = title.replace(/&amp;/g, '&');
       vm.data.title = title;
+      courseLink.href = `http://shrinker.techcoursesite.com/?course=${vm.data.title}`;
 
       if (vm.data.discount === 100) {
         vm.data.categories.push(50);
@@ -222,11 +225,8 @@
       const subImage2 = subImage.substring(subImage.indexOf('1x') + 4);
       const image = subImage2.substring(0, subImage2.indexOf('2x') - 1);
       vm.image = image;
-      linkImg.alt = title;
 
       /** Create course link btn */
-      courseLink.appendChild(linkImg);
-      courseBtn.appendChild(courseLink);
 
       /** What you'll learn information */
       const skillsToLean = [];
@@ -286,13 +286,13 @@
 
 
       // Put all elements together and send in content property to data
-      const finalContent = htmlToElement(summaryElement).outerHTML + h2Learn.outerHTML + skillsList.outerHTML + h2Aud.outerHTML + audienceList.outerHTML + adElement.outerHTML +  h2Req.outerHTML + requiremenets.outerHTML + courseBtn.outerHTML;
+      const finalContent = htmlToElement(summaryElement).outerHTML + h2Learn.outerHTML + skillsList.outerHTML + h2Aud.outerHTML + audienceList.outerHTML + adElement.outerHTML +  h2Req.outerHTML + requiremenets.outerHTML + courseLink.outerHTML;
 
       vm.data.content = finalContent;
 
       // Display description preview in app
       const descDiv = document.getElementById('courseDesc');
-      const stringContent = htmlToElement(summaryElementDesc).outerHTML + h2Learn.outerHTML + skillsList.outerHTML + h2Aud.outerHTML + audienceList.outerHTML +  h2Req.outerHTML + requiremenets.outerHTML + courseBtn.outerHTML;
+      const stringContent = htmlToElement(summaryElementDesc).outerHTML + h2Learn.outerHTML + skillsList.outerHTML + h2Aud.outerHTML + audienceList.outerHTML +  h2Req.outerHTML + requiremenets.outerHTML + courseLink.outerHTML;
 
       const descriptionInApp = htmlToElement(stringContent);
       descriptionInApp.childNodes.forEach(element => {
@@ -305,7 +305,7 @@
       vm.verifyDuplicatedPost(vm.data).then(({ data }) => {
         document.querySelector('body').classList.remove('request');
         if (data.message !== 'Duplicated post') {
-          vm.submitted = true;
+          $scope.submitted = true;
           descDiv.appendChild(descriptionInApp);
         } else {
           vm.reset();
@@ -322,7 +322,7 @@
 
     vm.reset = () => {
       vm.courseHtml = '';
-      vm.submitted = false;
+      $scope.submitted = false;
       vm.tagString = '';
       if (vm.bcalendar && vm.bcalendar[0]) {
         vm.bcalendar[0].clear();
@@ -333,7 +333,6 @@
       vm.courseCoupon = '';
       vm.data = {
         status: 'publish',
-        discount: $scope.selectOpts[0],
         tags: []
       };
       $scope.selectedList = [];
@@ -342,21 +341,23 @@
     };
 
     vm.send = () => {
-      $scope.loading = true;
-      document.querySelector('body').classList.add('request');
-      vm.httpSendPost(vm.data).then(({ data }) => {
-        document.querySelector('body').classList.remove('request');
-        $scope.loading = false;
-        if (data.statusCode === 201) {
-          vm.reset();
-          bulmaToast.toast({
-            message: 'Information sent!',
-            duration: 2000,
-            type: 'is-info',
-            position: 'bottom-right',
-            animate: { in: 'fadeIn', out: 'fadeOut' }
-          });
-        }
+      $scope.uploadTnt($scope.files[0], vm.data.title).then(() => {
+        $scope.loading = true;
+        document.querySelector('body').classList.add('request');
+        vm.httpSendPost(vm.data).then(({ data }) => {
+          document.querySelector('body').classList.remove('request');
+          $scope.loading = false;
+          if (data.statusCode === 201) {
+            vm.reset();
+            bulmaToast.toast({
+              message: 'Information sent!',
+              duration: 2000,
+              type: 'is-info',
+              position: 'bottom-right',
+              animate: { in: 'fadeIn', out: 'fadeOut' }
+            });
+          }
+        });
       });
     };
 
@@ -364,7 +365,7 @@
       const dto = {
         basic: authenticateUser(username, password)
       };
-      return $http.post(`${vm.apiUrl}/auth`, dto);
+      return $http.post(`${$scope.apiUrl}/auth`, dto);
     }
 
     vm.httpSendPost = data => {
@@ -374,7 +375,7 @@
         image: vm.image,
         basic: authenticateUser(username, password)
       }
-      return $http.post(`${vm.apiUrl}/post`, DTO);
+      return $http.post(`${$scope.apiUrl}/post`, DTO);
     };
 
     vm.verifyDuplicatedPost = data => {
@@ -384,12 +385,18 @@
         image: vm.image,
         basic: authenticateUser(username, password)
       }
-      return $http.post(`${vm.apiUrl}/verifypost`, DTO);
+      return $http.post(`${$scope.apiUrl}/validpost`, DTO);
     };
 
     function authenticateUser(username, password) {
       return "Basic " + btoa(username + ":" + password);
     }
+
+    function decodeHtml(html) {
+      var txt = document.createElement("textarea");
+      txt.innerHTML = html;
+      return txt.value;
+  }  
 
     function htmlToElement(html) {
       var element = document.createElement('div');

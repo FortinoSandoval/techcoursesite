@@ -50,6 +50,25 @@ const download = function(uri, filename, callback) {
   });
 };
 
+app.post('/categories', (req, res) => {
+  const basic = req.body.basic;
+  const postOptions = {
+    url: 'https://techcoursesite.com/wp-json/wp/v2/categories',
+    headers: {
+      'User-Agent': 'request',
+      Authorization: basic
+    },
+    method: 'GET',
+    json: true,
+    qs: {
+      'per_page': 100
+    },
+  };
+  request(postOptions, (error, response, body) => {
+    res.send(body);
+  });
+});
+
 app.post('/auth', (req, res) => {
   const basic = req.body.basic;
   const postOptions = {
@@ -114,7 +133,6 @@ app.post('/post', (req, resp, next) => {
   req.body.data.tags = [];
   const image = req.body.image;
   const finalData = req.body.data;
-  const finalTitle = finalData.discount === 'FREE' ? `[FREE] ${finalData.title} [Udemy]` : `[${finalData.discount}% OFF] ${finalData.title} [Udemy]`;
   const imageName = image.substring(image.indexOf('480x270') + 8, image.length);
   
   function postTags(tag, callback) {
@@ -202,7 +220,7 @@ app.post('/savetnt', upload.single('file'), (req, res) => {
   pool.getConnection((err, connection) => {
     const fileData = {
       file_name: req.body.fileName,
-      type: req.file.mimetype,
+      type: 'application/octet-stream',
       tnt: fs.readFileSync(req.file.path)
     };
 
