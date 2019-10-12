@@ -59,8 +59,10 @@
       vm.showLogin = true;
     }
     vm.apiUrl = ''
-    if (location.hostname === 'localhost' && location.port !== '4000') {
-      vm.apiUrl = 'https://coursegetter.herokuapp.com';
+    if (location.hostname === 'localhost') {
+      if (location.port !== '4000') {
+        vm.apiUrl = 'localhost:4000';
+      }
     }
 
     vm.saveCredentials = () => {

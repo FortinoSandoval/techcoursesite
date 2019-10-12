@@ -1,7 +1,7 @@
 const gulp = require('gulp');
 const webserver = require('gulp-webserver');
 
-gulp.task('webserver', ['serve'], function () {  
+gulp.task('run', ['serve'], function () {
   gulp.src('.tmp/serve')
   .pipe(webserver({
     directoryListing: {
