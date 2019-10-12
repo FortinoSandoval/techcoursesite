@@ -116,8 +116,11 @@
     "gulp-util": "^3.0.8",
     "gulp-webserver": "^0.9.1",
     "gulpdoc": "^1.1.5",
+    "http-proxy-middleware": "^0.20.0",
     "main-bower-files": "^2.13.1",
     "npm-check-updates": "^3.1.18",
+    "proxy-middleware": "^0.15.0",
+    "url": "^0.11.0",
     "wiredep": "^4.0.0"
   },
   "greenkeeper": {

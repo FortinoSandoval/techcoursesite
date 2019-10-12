@@ -3,6 +3,8 @@
 const browserSync = require('browser-sync');
 const gulp = require('gulp');
 const util = require('util');
+const url = require('url');
+const proxy = require('proxy-middleware');
 
 const config = require('./config');
 
@@ -41,11 +43,19 @@ function initBrowsersync(baseDir) {
       '/bower_components': 'bower_components',
     };
   }
+  const env = process.env.NODE_ENV;
+
+
+  const uri = env === 'development' ? `http://localhost:4000` : '';
+  var proxyOptions = url.parse(uri);
+  proxyOptions.route = '/api';
 
   browserSync.init({
+    open: true,
     server: {
       baseDir: baseDir,
-      routes: routes,
+      middleware: [proxy(proxyOptions)],
+      routes: routes
     },
     single: true,
     startPath: '/',

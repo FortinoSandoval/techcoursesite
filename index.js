@@ -9,7 +9,6 @@ const fs = require("fs");
 const request = require('request');
 const async = require('async')
 const DIR = './uploads';
-const env = process.env.NODE_ENV;
 
 // middleware
 app.use(cors());
@@ -38,13 +37,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 app.get('/', (req, res) => {
-  if (env === 'development') {
-    console.log('dev');
-    res.sendFile(path.join(__dirname, './.tmp/serve/index.html'));
-  } else {
-    console.log('prod');
-    res.sendFile(path.join(__dirname, '/dist/index.html'));
-  }
+  res.sendFile(path.join(__dirname, '/dist/index.html'));
 });
 
 
@@ -56,10 +49,6 @@ const download = function(uri, filename, callback) {
       .on('close', callback);
   });
 };
-
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '/dist/index.html'));
-});
 
 app.post('/auth', (req, res) => {
   const basic = req.body.basic;
@@ -73,7 +62,7 @@ app.post('/auth', (req, res) => {
     json: true
   };
   request(postOptions, (error, response) => {
-    if (response.body.code === 'rest_cannot_create') {
+    if (response.body.code === 'rest_cannot_create' || response.body.code === 'invalid_username') {
       res.send(false);
     } else if (response.body.code === 'empty_content') {
       res.send(true);

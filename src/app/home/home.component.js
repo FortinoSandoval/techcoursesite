@@ -58,12 +58,7 @@
     if (!localStorage.credentials) {
       vm.showLogin = true;
     }
-    vm.apiUrl = ''
-    if (location.hostname === 'localhost') {
-      if (location.port !== '4000') {
-        vm.apiUrl = 'localhost:4000';
-      }
-    }
+    vm.apiUrl = 'api'
 
     vm.saveCredentials = () => {
       $scope.invalidCredentials = false;
@@ -76,8 +71,8 @@
       $scope.auth(credentials).then(({data}) => {
         document.querySelector('body').classList.remove('request');
         $scope.loading = false;
-        if (data.statusCode === 401) $scope.invalidCredentials = true;
-        else if (data.statusCode === 200) {
+        if (!data) $scope.invalidCredentials = true;
+        else if (data) {
           localStorage.setItem('credentials', JSON.stringify(credentials));
           $state.reload();
           bulmaToast.toast({
