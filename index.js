@@ -192,7 +192,6 @@ app.post('/post', (req, resp, next) => {
 
         // request options for post creation
         finalData.featured_media = finalImageId;
-        finalData.title = finalTitle;
         
         const postOptions = {
           url: 'https://techcoursesite.com/wp-json/wp/v2/posts',
@@ -219,7 +218,7 @@ app.post('/savetnt', upload.single('file'), (req, res) => {
   }
   pool.getConnection((err, connection) => {
     const fileData = {
-      file_name: req.body.fileName,
+      file_name: escape(req.body.fileName),
       type: 'application/octet-stream',
       tnt: fs.readFileSync(req.file.path)
     };

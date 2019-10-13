@@ -93,6 +93,7 @@
       ngf-allow-dir="true"
       accept="*"
       ngf-pattern="'*'"
+      ng-show="!vm.showLogin && !submitted"
     >
       <label class="file-label">
         <span class="file-cta">
@@ -108,7 +109,7 @@
         </span>
       </label>
     </div>
-    <button ng-click="uploadPic(files[0])">Upload</button>
+    <!-- <button ng-click="uploadPic(files[0])">Upload</button> -->
 
     <!-- Basic Information Form -->
     <div ng-if="!vm.showLogin && !submitted">

@@ -55,7 +55,7 @@
       vm.showLogin = true;
     }
 
-    if (!localStorage.getItem('categories')) {
+    if (!localStorage.getItem('categories') && !vm.showLogin) {
       const { username, password } = JSON.parse(localStorage.getItem('credentials'));
       const DTO = {
         basic: authenticateUser(username, password)
@@ -108,6 +108,7 @@
     };
 
     vm.getInfo = () => {
+      if (!$scope.files) return;
       vm.data.categories = [];
       $scope.selectedListText = [];
       $scope.selectedList.forEach((el, index) => {
