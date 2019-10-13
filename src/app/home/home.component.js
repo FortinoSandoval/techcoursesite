@@ -17,7 +17,7 @@
       if (!file || !fileName) return;
       let formData = new FormData();
       formData.append('file', file);
-      formData.append('fileName', fileName);
+      formData.append('fileName', btoa(fileName));
       return $http({
         url: `${$scope.apiUrl}/savetnt`,
         method: 'POST',
