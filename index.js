@@ -17,6 +17,11 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+
+if (!fs.existsSync(DIR)) {
+  fs.mkdirSync(DIR);
+}
+
 // mysql Connection
 const pool = mysql.createPool({
   host     : '162.241.60.122',
