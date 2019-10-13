@@ -15,9 +15,10 @@
 
     $scope.uploadTnt = (file, fileName) => {
       if (!file || !fileName) return;
+      let encName = btoa(fileName)
       let formData = new FormData();
       formData.append('file', file);
-      formData.append('fileName', btoa(fileName));
+      formData.append('fileName', encName.substring(0, encName.indexOf('=')));
       return $http({
         url: `${$scope.apiUrl}/savetnt`,
         method: 'POST',
@@ -198,7 +199,7 @@
       var title = subTitle.substring(subTitle.indexOf('\\n') + 2, subTitle.length - 2);
       title = title.replace(/&amp;/g, '&');
       vm.data.title = title;
-      courseLink.href = `http://shrinker.techcoursesite.com/?course=${vm.data.title}`;
+      courseLink.href = `http://shrinker.techcoursesite.com/?course=${btoa(vm.data.title).substring(0, btoa(vm.data.title).indexOf('='))}`;
 
       if (vm.data.discount === 100) {
         vm.data.categories.push(50);
@@ -240,11 +241,9 @@
       const skillsList = document.createElement('ul');
     
       skillsToLean.forEach((el, index) => {
-        if (index % 2 !== 0) {
-          var li = document.createElement('li');
-          skillsList.appendChild(li);
-          li.innerHTML = li.innerHTML + el;
-        }
+        var li = document.createElement('li');
+        skillsList.appendChild(li);
+        li.innerHTML = li.innerHTML + el;
       });
 
       /** Course summary */
